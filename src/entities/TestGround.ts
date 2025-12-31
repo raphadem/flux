@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import * as RAPIER from "@dimforge/rapier3d-compat";
-import { PhysicsObject } from "@bindings/PhysicsObject";
-import type { Updatable } from "@core/Updatable";
+import { PhysicsObject } from "@/bindings/PhysicsObject";
+import type { Updatable } from "@/core/Updatable";
 
 export class TestGround implements Updatable {
   entity: PhysicsObject;

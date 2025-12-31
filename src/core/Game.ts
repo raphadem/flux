@@ -1,13 +1,13 @@
 import { Loop } from "./Loop";
 import { Input } from "./Input";
-import { Renderer } from "@graphics/Renderer";
-import { SceneManager } from "@graphics/Scene";
-import { CameraManager } from "@graphics/Camera";
-import { PhysicsWorld } from "@physics/PhysicsWorld";
-import { Player } from "@entities/Player";
-import { TestCube } from "@entities/TestCube";
-import { TestGround } from "@entities/TestGround";
-import { createBasicLighting } from "@graphics/Lighting";
+import { Renderer } from "@/graphics/Renderer";
+import { SceneManager } from "@/graphics/Scene";
+import { CameraManager } from "@/graphics/Camera";
+import { PhysicsWorld } from "@/physics/PhysicsWorld";
+import { Player } from "@/entities/Player";
+import { TestCube } from "@/entities/TestCube";
+import { TestGround } from "@/entities/TestGround";
+import { createBasicLighting } from "@/graphics/Lighting";
 
 export class Game {
   private loop: Loop;

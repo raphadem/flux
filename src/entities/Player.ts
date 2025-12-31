@@ -1,13 +1,15 @@
 // entities/Player.ts
-import type { Updatable } from "@core/Updatable";
-import { Input } from "@core/Input";
-import { PhysicsObject } from "@bindings/PhysicsObject";
+import type { Updatable } from "@/core/Updatable";
+import { Input } from "@/core/Input";
+import { PhysicsObject } from "@/bindings/PhysicsObject";
 import * as RAPIER from "@dimforge/rapier3d-compat";
 import * as THREE from "three";
+import { PlayerConfig } from "@/config";
 
 export class Player implements Updatable {
   entity: PhysicsObject;
-  speed = 10;
+  private jumpBuffer = 0;
+  private coyoteTimer = 0;
 
   constructor(world: RAPIER.World, scene: THREE.Scene, private input: Input) {
     const geo = new THREE.BoxGeometry(1, 2, 1);
@@ -23,10 +25,33 @@ export class Player implements Updatable {
     this.entity = new PhysicsObject(mesh, body);
   }
 
+  isGrounded() {
+    return true;
+  }
+
+  jump() {}
+
   fixedUpdate(fixedDt: number) {
+    const grounded = this.isGrounded();
+
+    // Coyote time
+    if (grounded) {
+      this.coyoteTimer = PlayerConfig.jump.coyoteTime;
+    } else {
+      this.coyoteTimer -= fixedDt;
+    }
+
+    // Can we jump?
+    if (this.jumpBuffer > 0 && this.coyoteTimer > 0) {
+      this.jump();
+      this.jumpBuffer = 0; // consume buffer
+      this.coyoteTimer = 0;
+    }
+
     // Simple movement based on input axes
-    const moveX = this.input.getAxis("Horizontal") * this.speed;
-    const moveZ = this.input.getAxis("Vertical") * this.speed;
+    const moveX =
+      this.input.getAxis("Horizontal") * PlayerConfig.movement.speed;
+    const moveZ = this.input.getAxis("Vertical") * PlayerConfig.movement.speed;
 
     const current = this.entity.body.translation();
     this.entity.body.setNextKinematicTranslation({
@@ -39,7 +64,15 @@ export class Player implements Updatable {
     this.entity.sync();
   }
 
-  // update(dt: number) {
-  //   // Optional: handle camera follow, effects, animations
-  // }
+  update(dt: number) {
+    // Optional: handle camera follow, effects, animations
+    // Buffer jump input
+    if (this.input.isPressed("Space")) {
+      this.jumpBuffer = PlayerConfig.jump.bufferTime;
+    }
+
+    if (this.jumpBuffer > 0) {
+      this.jumpBuffer -= dt;
+    }
+  }
 }

@@ -1,5 +1,7 @@
+import { PhysicsConfig } from "@/config";
+
 export class Time {
-  readonly fixedDt = 1 / 60;
+  readonly fixedDt = PhysicsConfig.fixedDt;
   readonly dt = 0;
 
   private accumulator = 0;

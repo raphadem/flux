@@ -1,9 +1,9 @@
 import * as THREE from "three";
 import * as RAPIER from "@dimforge/rapier3d-compat";
-import { PhysicsObject } from "@bindings/PhysicsObject";
-import type { Updatable } from "@core/Updatable";
-import type { Input } from "@core/Input";
-import type { Vec3 } from "@physics/Types";
+import { PhysicsObject } from "@/bindings/PhysicsObject";
+import type { Updatable } from "@/core/Updatable";
+import type { Input } from "@/core/Input";
+import type { Vec3 } from "@/physics/Types";
 
 export class TestCube implements Updatable {
   entity: PhysicsObject;
