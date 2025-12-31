@@ -1,7 +1,6 @@
 import { PhysicsObject } from "./PhysicsObject";
 import { PhysicsWorld } from "./PhysicsWorld";
-
-const FIXED_DT = 1 / 60;
+import config from "@core/Config";
 
 export class GameLoop {
   private lastTime = 0;
@@ -14,17 +13,17 @@ export class GameLoop {
   ) {}
 
   start(): void {
-    requestAnimationFrame(this.loop.bind(this));
+    requestAnimationFrame(this.loop);
   }
 
-  private loop(time: number): void {
+  private loop = (time: number): void => {
     const delta = (time - this.lastTime) / 1000;
     this.lastTime = time;
     this.accumulator += delta;
 
-    while (this.accumulator >= FIXED_DT) {
+    while (this.accumulator >= config.fixedDt) {
       this.physicsWorld.step();
-      this.accumulator -= FIXED_DT;
+      this.accumulator -= config.fixedDt;
     }
 
     // Sync three.js meshes to physics bodies
@@ -35,5 +34,5 @@ export class GameLoop {
     this.render();
 
     requestAnimationFrame(this.loop.bind(this));
-  }
+  };
 }

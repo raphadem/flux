@@ -4,6 +4,7 @@ await RAPIER.init();
 import { PhysicsObject } from "./PhysicsObject";
 import { PhysicsWorld } from "./PhysicsWorld";
 import { GameLoop } from "./GameLoop";
+import config from "@core/Config";
 
 async function main() {
   // --- THREE.JS SETUP ---
