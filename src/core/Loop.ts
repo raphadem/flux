@@ -1,23 +1,24 @@
 import { Time } from "./Time";
+import { Renderer } from "@graphics/Renderer";
+import { SceneManager } from "@graphics/Scene";
+import { CameraManager } from "@graphics/Camera";
+import { PhysicsWorld } from "@physics/PhysicsWorld";
+import { Input } from "@core/Input";
+import type { Updatable } from "@core/Updatable";
 
-export interface Updatable {
-  fixedUpdate?(input: any): void;
-  update?(dt: number): void;
+interface GameSystems {
+  renderer: Renderer;
+  scene: SceneManager;
+  camera: CameraManager;
+  physics: PhysicsWorld;
+  input: Input;
 }
 
 export class Loop {
   private time = new Time();
   private updatables: Updatable[] = [];
 
-  constructor(
-    private systems: {
-      renderer: any;
-      scene: any;
-      camera: any;
-      physics: any;
-      input: any;
-    }
-  ) {}
+  constructor(private systems: GameSystems) {}
 
   add(updatable: Updatable) {
     this.updatables.push(updatable);
@@ -37,7 +38,7 @@ export class Loop {
       physics.step();
 
       for (const u of this.updatables) {
-        u.fixedUpdate?.(input);
+        u.fixedUpdate?.(this.time.fixedDt);
       }
     }
 

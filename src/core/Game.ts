@@ -4,6 +4,7 @@ import { Renderer } from "@graphics/Renderer";
 import { SceneManager } from "@graphics/Scene";
 import { CameraManager } from "@graphics/Camera";
 import { PhysicsWorld } from "@physics/PhysicsWorld";
+import { Player } from "@entities/Player";
 import { TestCube } from "@entities/TestCube";
 import { TestGround } from "@entities/TestGround";
 import { createBasicLighting } from "@graphics/Lighting";
@@ -26,27 +27,29 @@ export class Game {
       input,
     });
 
-    this.createGameObjects(scene, physics);
+    this.createGameObjects(scene, physics, input);
   }
 
-  createGameObjects(scene: SceneManager, physics: PhysicsWorld) {
-    const cube = new TestCube(physics.world, scene.scene, {
+  createGameObjects(scene: SceneManager, physics: PhysicsWorld, input: Input) {
+    const player = new Player(physics.world, scene.scene, input);
+    const cube = new TestCube(physics.world, scene.scene, input, {
       x: 0,
       y: 5,
       z: 0,
     });
-    const cube2 = new TestCube(physics.world, scene.scene, {
+    const cube2 = new TestCube(physics.world, scene.scene, input, {
       x: -5,
       y: 5,
       z: 0,
     });
-    const cube3 = new TestCube(physics.world, scene.scene, {
+    const cube3 = new TestCube(physics.world, scene.scene, input, {
       x: 5,
       y: 5,
       z: 0,
     });
     const ground = new TestGround(physics.world, scene.scene);
 
+    this.loop.add(player);
     this.loop.add(cube);
     this.loop.add(cube2);
     this.loop.add(cube3);

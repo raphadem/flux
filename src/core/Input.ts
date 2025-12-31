@@ -13,4 +13,13 @@ export class Input {
   isDown(code: string): boolean {
     return this.keys.has(code);
   }
+
+  getAxis(name: "Horizontal" | "Vertical") {
+    switch (name) {
+      case "Horizontal":
+        return (this.isDown("KeyD") ? 1 : 0) + (this.isDown("KeyA") ? -1 : 0);
+      case "Vertical":
+        return (this.isDown("KeyW") ? -1 : 0) + (this.isDown("KeyS") ? 1 : 0);
+    }
+  }
 }

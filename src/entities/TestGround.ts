@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import * as RAPIER from "@dimforge/rapier3d-compat";
 import { PhysicsObject } from "@bindings/PhysicsObject";
-import type { Updatable } from "@core/Loop";
+import type { Updatable } from "@core/Updatable";
 
 export class TestGround implements Updatable {
   entity: PhysicsObject;
@@ -19,7 +19,7 @@ export class TestGround implements Updatable {
     this.entity = new PhysicsObject(mesh, body);
   }
 
-  fixedUpdate() {
+  fixedUpdate(fixedDt: number) {
     this.entity.sync();
   }
 }

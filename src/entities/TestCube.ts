@@ -1,13 +1,19 @@
 import * as THREE from "three";
 import * as RAPIER from "@dimforge/rapier3d-compat";
 import { PhysicsObject } from "@bindings/PhysicsObject";
-import type { Updatable } from "@core/Loop";
+import type { Updatable } from "@core/Updatable";
+import type { Input } from "@core/Input";
 import type { Vec3 } from "@physics/Types";
 
 export class TestCube implements Updatable {
   entity: PhysicsObject;
 
-  constructor(world: RAPIER.World, scene: THREE.Scene, pos: Vec3) {
+  constructor(
+    world: RAPIER.World,
+    scene: THREE.Scene,
+    private input: Input,
+    pos: Vec3
+  ) {
     const geo = new THREE.BoxGeometry(1, 1, 1);
     const mat = new THREE.MeshStandardMaterial({ color: "orange" });
     const mesh = new THREE.Mesh(geo, mat);
@@ -22,8 +28,8 @@ export class TestCube implements Updatable {
     this.entity = new PhysicsObject(mesh, body);
   }
 
-  fixedUpdate(input: any): void {
-    if (input.isDown("KeyA"))
+  fixedUpdate(fixedDt: number) {
+    if (this.input.isDown("KeyR"))
       this.entity.body.setTranslation({ x: 0, y: 5, z: 0 }, true);
     this.entity.sync();
   }
