@@ -5,7 +5,9 @@
       "@/*": ["./*"],
       "@core/*": ["core/*"],
       "@graphics/*": ["graphics/*"],
-      "@physics/*": ["physics/*"]
+      "@physics/*": ["physics/*"],
+      "@entities/*": ["entities/*"],
+      "@bindings/*": ["bindings/*"]
     },
     "target": "ES2022",
     "useDefineForClassFields": true,
