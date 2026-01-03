@@ -1,28 +1,32 @@
-export const PlayerConfig = {
-  shape: {
-    height: 0.5,
-    radius: 1,
-  },
+function createPhysicsConfig() {
+  return {
+    controller: {
+      height: 0.5,
+      radius: 1,
 
-  jump: {
-    bufferTime: 0.12,
-    coyoteTime: 0.08,
-    impulse: 8.5,
-  },
+      snapDistance: 0.2,
+      maxSlopeAngle: 50,
+      skinWidth: 0.5,
+    },
 
-  movement: {
-    // speed: 10,
-    maxSpeed: 20,
-    // airControl: 0.4,
-    accelerationGround: 2,
-    accelerationAir: 10,
+    jump: {
+      bufferTime: 0.12,
+      coyoteTime: 0.12,
+      impulse: 11,
+    },
 
-    dampingGround: 2,
-    dampingAir: 8,
+    movement: {
+      maxGroundSpeed: 12,
+      maxAirSpeed: 14,
 
-    maxSlopeAngle: 45,
-    snapDistance: 0.1,
-    supportGrace: 0.08,
-    maxSupportSpeed: 0.08,
-  },
-} as const;
+      groundAcceleration: 80,
+      groundDeceleration: 50,
+
+      airAcceleration: 28,
+
+      airDrag: 0.98, // only when no input
+    },
+  };
+}
+
+export const PlayerConfig = createPhysicsConfig();

@@ -1,4 +1,4 @@
 export interface Updatable {
-  fixedUpdate?(fixedDt: number): void;
+  fixedUpdate?(dt: number): void;
   update?(dt: number): void;
 }

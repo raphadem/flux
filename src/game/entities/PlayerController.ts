@@ -1,15 +1,8 @@
 import * as THREE from "three";
 import * as RAPIER from "@dimforge/rapier3d-compat";
-import { Input } from "@/core/Input";
 import { PlayerConfig, PhysicsConfig } from "@/config";
-import { PhysicsWorld } from "@/engine/physics/PhysicsWorld";
-import type { Vec3 } from "@/engine/physics/Types";
-import type { GameContext } from "@/core/GameContext";
 import { PhysicsBinding } from "@/engine/physics/PhysicsBinding";
-
-function toRapierVec(v: Vec3) {
-  return { x: v.x, y: v.y, z: v.z };
-}
+import type { GameContext } from "@/core/GameContext";
 
 export class PlayerController {
   // --- Physics Data ---
@@ -22,31 +15,23 @@ export class PlayerController {
   private jumpBuffer = 0;
 
   // --- Components ---
-  // public mesh: THREE.Mesh;
-  // public body: RAPIER.RigidBody;
-  // public collider: RAPIER.Collider;
   public binding: PhysicsBinding;
 
   // The magic ingredient: Rapier's built-in controller
   private characterController: RAPIER.KinematicCharacterController;
 
-  // --- Configuration ---
-  // Dimensions
-  private readonly radius = 0.5;
-  private readonly height = 1.0; // Total height will be radius*2 + height = 2.0
-
-  // Settings
-  private readonly offset = 0.05; // Skin width/offset
-
   constructor(private ctx: GameContext) {
     const { scene, physics, input } = ctx;
     // 1. Create Visual Mesh
     const mesh = new THREE.Mesh(
-      new THREE.CapsuleGeometry(this.radius, this.height, 4, 8),
+      new THREE.CapsuleGeometry(
+        PlayerConfig.controller.radius,
+        PlayerConfig.controller.height,
+        4,
+        8
+      ),
       new THREE.MeshStandardMaterial({ color: "cyan" })
     );
-    // Sync initial position
-    mesh.position.copy(this.position);
     scene.scene.add(mesh);
 
     // 2. Create RigidBody (Kinematic Position Based)
@@ -62,8 +47,8 @@ export class PlayerController {
     // 3. Create Collider
     // Note: ActiveCollisionTypes is important so we can detect interactions if needed later
     const colliderDesc = RAPIER.ColliderDesc.capsule(
-      this.height / 2,
-      this.radius
+      PlayerConfig.controller.height / 2,
+      PlayerConfig.controller.radius
     ).setActiveCollisionTypes(
       RAPIER.ActiveCollisionTypes.DEFAULT |
         RAPIER.ActiveCollisionTypes.KINEMATIC_FIXED
@@ -74,14 +59,19 @@ export class PlayerController {
     // 4. Init Character Controller
     // The offset ensures we don't tunnel through walls.
     this.characterController = physics.world.createCharacterController(
-      this.offset
+      PlayerConfig.controller.skinWidth
     );
 
     // Auto-step allows walking up stairs automatically
     this.characterController.enableAutostep(0.7, 0.3, true);
 
     // Snap to ground prevents "bunny hopping" when walking down slopes
-    this.characterController.enableSnapToGround(0.5);
+    this.characterController.enableSnapToGround(
+      PlayerConfig.controller.snapDistance
+    );
+    this.characterController.setMaxSlopeClimbAngle(
+      PlayerConfig.controller.maxSlopeAngle
+    );
 
     // Up direction is Y
     this.characterController.setUp({ x: 0, y: 1, z: 0 });
@@ -149,9 +139,6 @@ export class PlayerController {
     this.binding.body.setNextKinematicTranslation(newPos);
     this.position.set(newPos.x, newPos.y, newPos.z);
 
-    // 8. Visual Sync
-    this.binding.mesh.position.copy(this.position);
-
     // 9. IMPORTANT: Velocity Re-projection (Momentum Preservation)
     // If we hit a wall, our desired translation was stopped.
     // We must update our internal velocity to match the STOP, or we will "store" velocity
@@ -179,16 +166,16 @@ export class PlayerController {
   private applyMovementPhysics(inputDir: THREE.Vector3, dt: number) {
     // Determine acceleration settings
     const speed = this.grounded
-      ? PlayerConfig.movement.maxSpeed
-      : PlayerConfig.movement.maxSpeed; // Can be different for air
+      ? PlayerConfig.movement.maxGroundSpeed
+      : PlayerConfig.movement.maxAirSpeed; // Can be different for air
 
     const accel = this.grounded
-      ? PlayerConfig.movement.accelerationGround
-      : PlayerConfig.movement.accelerationAir;
+      ? PlayerConfig.movement.groundAcceleration
+      : PlayerConfig.movement.airAcceleration;
 
     const friction = this.grounded
-      ? PlayerConfig.movement.dampingGround // e.g. 10.0
-      : PlayerConfig.movement.dampingAir; // e.g. 0.0 or 0.5
+      ? PlayerConfig.movement.groundDeceleration // e.g. 10.0
+      : PlayerConfig.movement.airDrag; // e.g. 0.0 or 0.5
 
     // 1. Apply Friction (Damping) first
     // We only damp horizontal speed
