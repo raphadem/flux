@@ -90,6 +90,11 @@ export class Input {
   }
 
   printKeys() {
-    if (this.down.size > 0) console.log(this.down);
+    if (this.pressed.size > 0) console.log(this.pressed);
   }
+
+  fakePress = (key: string) => {
+    this.down.add(key);
+    // this.pressed.add(e.code);
+  };
 }

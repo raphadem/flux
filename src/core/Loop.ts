@@ -1,19 +1,7 @@
 import { Time } from "./Time";
-import { Renderer } from "@/graphics/Renderer";
-import { SceneManager } from "@/graphics/Scene";
-import { CameraManager } from "@/graphics/Camera";
-import { PhysicsWorld } from "@/physics/PhysicsWorld";
-import { Input } from "@/core/Input";
 import type { Updatable } from "@/core/Updatable";
+import type { GameSystems } from "./GameSystems";
 import { DebugConfig } from "@/config";
-
-interface GameSystems {
-  renderer: Renderer;
-  scene: SceneManager;
-  camera: CameraManager;
-  physics: PhysicsWorld;
-  input: Input;
-}
 
 export class Loop {
   private time = new Time();
@@ -30,17 +18,27 @@ export class Loop {
   }
 
   private tick = (now: number) => {
-    const { renderer, scene, camera, physics, input } = this.systems;
+    const { scene, physics, input } = this.systems.ctx;
+    const { renderer, camera, physicsSync, debugRenderer } = this.systems;
+    const alpha = 1;
 
-    input.printKeys();
-    if (input.isPressed("KeyP")) DebugConfig.physics = !DebugConfig.physics;
+    if (input.isPressed("KeyP")) DebugConfig.togglePhysics();
+    if (input.isPressed("KeyO")) {
+      DebugConfig.toggleDrawColliders();
+      debugRenderer.refreshVisibility();
+    }
+
     this.time.update(now);
 
     while (this.time.shouldStep()) {
-      if (DebugConfig.physics) physics.step();
+      if (DebugConfig.physics) {
+        physics.step();
 
-      for (const u of this.updatables) {
-        u.fixedUpdate?.(this.time.fixedDt);
+        for (const u of this.updatables) {
+          u.fixedUpdate?.(this.time.fixedDt);
+        }
+
+        physicsSync.capturePhysicsState();
       }
     }
 
@@ -48,7 +46,9 @@ export class Loop {
       u.update?.(this.time.dt);
     }
 
+    physicsSync.sync(alpha);
+    debugRenderer.update(alpha);
     renderer.render(scene.scene, camera.camera);
-    input.beginFrame(); // needs to be at end, as input caught after frame
+    input.beginFrame();
   };
 }
