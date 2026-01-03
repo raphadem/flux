@@ -18,6 +18,7 @@ import { DebugConfig } from "@/config";
 import { PhysicsSyncSystem } from "@/engine/physics/PhysicsSyncSystem";
 import type { GameSystems } from "./GameSystems";
 import { EntityFactory } from "./EntityFactory";
+import { Cone } from "@/game/entities/Cone";
 
 export class Game {
   private systems: GameSystems;
@@ -58,6 +59,7 @@ export class Game {
     const cube = entityFactory.create(TestCube, { x: 0, y: 5, z: -5 });
     const cube2 = entityFactory.create(TestCube, { x: -5, y: 5, z: 0 });
     const cube3 = entityFactory.create(TestCube, { x: 5, y: 5, z: 0 });
+    const cone = entityFactory.create(Cone, { x: 5, y: 3, z: 5 }, 5, 5);
 
     this.loop.add(arena);
     this.loop.add(box);
@@ -65,6 +67,7 @@ export class Game {
     this.loop.add(cube);
     this.loop.add(cube2);
     this.loop.add(cube3);
+    this.loop.add(cone);
     for (let i = 0; i < arena.boxes.length; i++) {
       physicsSync.register(arena.boxes[i].binding);
     }
@@ -76,6 +79,7 @@ export class Game {
     physicsSync.register(cube.binding);
     physicsSync.register(cube2.binding);
     physicsSync.register(cube3.binding);
+    physicsSync.register(cone.binding);
     // this.loop.add(ground);
 
     createBasicLighting(ctx.scene.scene);

@@ -86,6 +86,15 @@ export class PhysicsBinding {
         );
         break;
       }
+      case RAPIER.ShapeType.Cone: {
+        const height = collider.halfHeight();
+        const radius = collider.radius();
+        mesh = new THREE.Mesh(
+          new THREE.ConeGeometry(radius, height * 2),
+          new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true })
+        );
+        break;
+      }
       default:
         // fallback box
         mesh = new THREE.Mesh(
